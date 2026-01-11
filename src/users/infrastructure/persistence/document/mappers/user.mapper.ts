@@ -1,7 +1,5 @@
 import { User } from '../../../../domain/user';
 import { UserSchemaClass } from '../entities/user.schema';
-import { FileSchemaClass } from '../../../../../files/infrastructure/persistence/document/entities/file.schema';
-import { FileMapper } from '../../../../../files/infrastructure/persistence/document/mappers/file.mapper';
 import { Role } from '../../../../../roles/domain/role';
 import { Status } from '../../../../../statuses/domain/status';
 import { RoleSchema } from '../../../../../roles/infrastructure/persistence/document/entities/role.schema';
@@ -17,11 +15,6 @@ export class UserMapper {
     domainEntity.socialId = raw.socialId;
     domainEntity.firstName = raw.firstName;
     domainEntity.lastName = raw.lastName;
-    if (raw.photo) {
-      domainEntity.photo = FileMapper.toDomain(raw.photo);
-    } else if (raw.photo === null) {
-      domainEntity.photo = null;
-    }
 
     if (raw.role) {
       domainEntity.role = new Role();
@@ -48,14 +41,6 @@ export class UserMapper {
       role._id = domainEntity.role.id.toString();
     }
 
-    let photo: FileSchemaClass | undefined = undefined;
-
-    if (domainEntity.photo) {
-      photo = new FileSchemaClass();
-      photo._id = domainEntity.photo.id;
-      photo.path = domainEntity.photo.path;
-    }
-
     let status: StatusSchema | undefined = undefined;
 
     if (domainEntity.status) {
@@ -73,7 +58,6 @@ export class UserMapper {
     persistenceSchema.socialId = domainEntity.socialId;
     persistenceSchema.firstName = domainEntity.firstName;
     persistenceSchema.lastName = domainEntity.lastName;
-    persistenceSchema.photo = photo;
     persistenceSchema.role = role;
     persistenceSchema.status = status;
     persistenceSchema.createdAt = domainEntity.createdAt;
